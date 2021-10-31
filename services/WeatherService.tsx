@@ -1,16 +1,18 @@
 import { CurrentConditions, CurrentConditionsResponse } from "./interfaces/CurrentWeather";
-import { Forecast, HourlyForecastResponse } from "./interfaces/HourlyForecast";
-import { IClimate, IWeather } from "./interfaces/WeatherService";
+import { DailyForecast, DailyForecastResponse } from "./interfaces/DailyForecast";
+import { HourlyForecastResponse } from "./interfaces/HourlyForecast";
+import { IClimate, IWeather, IDayDegrees } from "./interfaces/WeatherService";
 
 /**
  * getWeather
- * Get the root data from weather by a global position.
+ * Gets the root data from weather by a global position.
  */
 export const getWeather = async () : Promise<IWeather> => {
     const { day, time } = getCurrentTimeDay();
-    const { results, forecasts } = await requestWeatherService("-23.438802929284265", "-46.59046036454876");
+    const { results, hourlyForecasts, dailyForecasts, defaultUnit } = await requestWeatherService("-23.438802929284265", "-46.59046036454876");
     const currentConditions: CurrentConditions = results[0];
-    const twoNextHoursForecasts = forecasts.slice(0, 2);
+    const twoNextHoursForecasts = hourlyForecasts.slice(0, 2);
+    const nextDayForecast: DailyForecast = dailyForecasts[0];
 
     const weather: IWeather = {
         currentDay: day,
@@ -18,7 +20,7 @@ export const getWeather = async () : Promise<IWeather> => {
         climate: currentConditions.phrase,
         weatherDegress: {
             value: currentConditions.temperature.value,
-            compoundValue: `${currentConditions.temperature.value.toFixed(0)}°${currentConditions.temperature.unit}`
+            compoundValue: `${currentConditions.temperature.value.toFixed(0)}${defaultUnit}`
         },
         nextHoursClimate: {
             humidity: currentConditions.relativeHumidity,
@@ -26,7 +28,7 @@ export const getWeather = async () : Promise<IWeather> => {
             climates: []
         },
         daysDegrees: []
-    }
+    };
     
     twoNextHoursForecasts.map((forecast) => {
         const forecastDate = new Date(forecast.date);
@@ -40,8 +42,46 @@ export const getWeather = async () : Promise<IWeather> => {
             .push(climate);
     });
 
-    // TO-DO: Get the past, current and future day degrees.
+    const pastDayDegrees: IDayDegrees = {
+        day: "ontem",
+        maxDegrees: `${currentConditions
+                    .temperatureSummary
+                    .past24Hours
+                    .maximum.value.toFixed(0)}${defaultUnit}`,
+        minDegress: `${currentConditions
+                    .temperatureSummary
+                    .past24Hours
+                    .minimum.value.toFixed(0)}${defaultUnit}`,
+    };
 
+    const currentDayDegrees: IDayDegrees = {
+        day: "hoje",
+        maxDegrees: `${currentConditions
+                    .temperatureSummary
+                    .past6Hours
+                    .maximum
+                    .value.toFixed(0)}${defaultUnit}`,
+        minDegress: `${currentConditions
+                    .temperatureSummary
+                    .past6Hours
+                    .minimum
+                    .value.toFixed(0)}${defaultUnit}`
+    };
+
+    const futureDayDegress: IDayDegrees = {
+        day: "amanhã",
+        maxDegrees: `${nextDayForecast
+                    .temperature
+                    .maximum
+                    .value.toFixed(0)}${defaultUnit}`,
+        minDegress: `${nextDayForecast
+                    .temperature
+                    .minimum
+                    .value.toFixed(0)}${defaultUnit}`
+    };
+
+    weather.daysDegrees.push(...[pastDayDegrees, currentDayDegrees, futureDayDegress]);
+    
     return weather;
 }
 
@@ -55,13 +95,19 @@ const getCurrentTimeDay = () => {
 }
 
 const requestWeatherService = async (lat: string, long: string) => {
-    const { results } = await requestCurrentWeather(lat, long);
-    const { forecasts } = await requestNextHoursWeather(lat, long);
+    const defaultUnit = "°C";
+    const defaultunitType = "metric";
+    const { results } = await requestCurrentWeather(lat, long, defaultunitType);
+    const hourlyForecastResponse = await requestHourlyWeather(lat, long, defaultunitType);
+    const dailyForecastResponse = await requestDailyWeather(lat, long, defaultunitType);
 
-    return { results, forecasts };
+    const hourlyForecasts = hourlyForecastResponse.forecasts;
+    const dailyForecasts = dailyForecastResponse.forecasts;
+
+    return { results, hourlyForecasts, dailyForecasts, defaultUnit };
 }
 
-const requestCurrentWeather = async (lat: string, long: string) : Promise<CurrentConditionsResponse> => {
+const requestCurrentWeather = async (lat: string, long: string, unitType: string) : Promise<CurrentConditionsResponse> => {
     const BASE_URL = "https://atlas.microsoft.com/weather/currentConditions/json";
     const API_VERSION = "1.0";
     
@@ -77,6 +123,10 @@ const requestCurrentWeather = async (lat: string, long: string) : Promise<Curren
         {
             name: "query",
             value: `${lat},${long}`
+        },
+        {
+            name: "unit",
+            value: unitType
         }
     ]
     
@@ -92,7 +142,7 @@ const requestCurrentWeather = async (lat: string, long: string) : Promise<Curren
     });
 }
 
-const requestNextHoursWeather = async (lat: string, long: string) : Promise<HourlyForecastResponse> => {
+const requestHourlyWeather = async (lat: string, long: string, unitType: string) : Promise<HourlyForecastResponse> => {
     const BASE_URL = "https://atlas.microsoft.com/weather/forecast/hourly/json";
     const API_VERSION = "1.0";
     
@@ -112,6 +162,10 @@ const requestNextHoursWeather = async (lat: string, long: string) : Promise<Hour
         {
             name: "duration",
             value: 12
+        },
+        {
+            name: "unit",
+            value: unitType
         }
     ]
     
@@ -124,5 +178,44 @@ const requestNextHoursWeather = async (lat: string, long: string) : Promise<Hour
     .then(res => res.json())
     .then(res => {
         return res as HourlyForecastResponse
+    });
+}
+
+const requestDailyWeather = async (lat: string, long: string, unitType: string) : Promise<DailyForecastResponse> => {
+    const BASE_URL = "https://atlas.microsoft.com/weather/forecast/daily/json";
+    const API_VERSION = "1.0";
+    
+    let requestParameters = [
+        {
+            name: "subscription-key",
+            value: "0Z4CceqXrEaAjKX2N-hwuyr_-p5VD7y-zP5f8E8KO54"
+        },
+        {
+            name: "language",
+            value: "pt-BR"
+        },
+        {
+            name: "query",
+            value: `${lat},${long}`
+        },
+        {
+            name: "duration",
+            value: 1
+        },
+        {
+            name: "unit",
+            value: unitType
+        }
+    ]
+    
+    const parameters = requestParameters.map(param => `${param.name}=${param.value}`);
+    
+    let fetchUrl: string = 
+    `${BASE_URL}?api-version=${API_VERSION}&${parameters.join("&")}`;
+    
+    return fetch(fetchUrl)
+    .then(res => res.json())
+    .then(res => {
+        return res as DailyForecastResponse
     });
 }

@@ -84,7 +84,7 @@ export interface Ice {
     unitType: number;
 }
 
-export interface Forecast {
+export interface HourlyForecast {
     date: Date;
     iconCode: number;
     iconPhrase: string;
@@ -113,5 +113,5 @@ export interface Forecast {
 }
 
 export interface HourlyForecastResponse {
-    forecasts: Forecast[];
+    forecasts: HourlyForecast[];
 }
