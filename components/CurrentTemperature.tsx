@@ -1,11 +1,13 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Text, View } from "./Themed";
-
-export const CurrentTemperature = () => {
+interface currentTemperatureProps {
+  currentTemperature?: String;
+}
+export const CurrentTemperature = (props: currentTemperatureProps) => {
   return (
     <View style={Styles.CurrentTemperatureStyled}>
-      <Text style={Styles.ShowTemperature}>32ºC</Text>
+      <Text style={Styles.ShowTemperature}>{props.currentTemperature}</Text>
     </View>
   );
 };
