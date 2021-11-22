@@ -1,11 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
+import React from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import { NextHours } from './components/NextHours';
+import useCachedResources from "./hooks/useCachedResources";
+import useColorScheme from "./hooks/useColorScheme";
+import Navigation from "./navigation";
+import { CurrentTemperature } from "./components/CurrentTemperature";
+// icone
+import { EvilIcons } from "@expo/vector-icons";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -16,11 +24,22 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        {//<Navigation colorScheme={colorScheme} />
-  } 
       <NextHours />
-        <StatusBar />
+        <TouchableOpacity style={stylesTest.refreshButton}>
+          <EvilIcons name="refresh" size={45} />
+        </TouchableOpacity>
+        <CurrentTemperature />
+        {/* <Navigation colorScheme={colorScheme} />
+        <StatusBar /> */}
       </SafeAreaProvider>
     );
   }
 }
+
+const stylesTest = StyleSheet.create({
+  refreshButton: {
+    position: "absolute",
+    alignSelf: "flex-start",
+    margin: 30,
+  },
+});
