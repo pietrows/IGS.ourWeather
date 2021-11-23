@@ -2,17 +2,18 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
-import Navigation from "./navigation";
+
+import useCachedResources from './hooks/useCachedResources';
+import useColorScheme from './hooks/useColorScheme';
+import { NextHours } from './components/NextHours';
 import { CurrentTemperature } from "./components/CurrentTemperature";
+
 import { useState } from "react";
 
 // interfece / api request
 import { getWeather } from "./services/WeatherService";
 import { IWeather } from "./services/interfaces/WeatherService";
 
-// icone
 import { EvilIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
@@ -28,6 +29,14 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
+
+      
+        <TouchableOpacity style={stylesTest.refreshButton}>
+          <EvilIcons name="refresh" size={45} />
+          
+        </TouchableOpacity>
+          <CurrentTemperature />
+          
         <TouchableOpacity
           style={stylesTest.refreshButton}
           onPress={() => getWeather().then((x) => setWeather(x))}
@@ -35,10 +44,8 @@ export default function App() {
           <EvilIcons name="refresh" size={45} />
         </TouchableOpacity>
         <CurrentTemperature
-          currentTemperature={weatherData?.weatherDegress.compoundValue}
-        />
-        {/* <Navigation colorScheme={colorScheme} />
-        <StatusBar /> */}
+          currentTemperature={weatherData?.weatherDegress.compoundValue}/>
+          <NextHours />
       </SafeAreaProvider>
     );
   }
