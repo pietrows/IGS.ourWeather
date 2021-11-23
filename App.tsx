@@ -30,11 +30,13 @@ export default function App() {
     return (
       <SafeAreaProvider>
 
-      <NextHours />
+      
         <TouchableOpacity style={stylesTest.refreshButton}>
           <EvilIcons name="refresh" size={45} />
+          
         </TouchableOpacity>
           <CurrentTemperature />
+          
         <TouchableOpacity
           style={stylesTest.refreshButton}
           onPress={() => getWeather().then((x) => setWeather(x))}
@@ -43,6 +45,7 @@ export default function App() {
         </TouchableOpacity>
         <CurrentTemperature
           currentTemperature={weatherData?.weatherDegress.compoundValue}/>
+          <NextHours />
       </SafeAreaProvider>
     );
   }

@@ -28,19 +28,19 @@ export function NextHours(){
              {
                 data.climates.map((item)=> {
                     return <View style={estilo.clima}>
-                        <Text style={estilo.text}>
-                        {item.value}
-                        </Text>
-                        <Text style={estilo.text}>
-                        {item.hour}
-                        </Text>
-                    </View>  
+                            <Text style={estilo.text}>
+                                {item.value}
+                            </Text>
+                            <Text style={estilo.text}>
+                                {item.hour}
+                            </Text>
+                            </View>  
                  })
              }
              
             <View style={estilo.clima}>
                 <Text style={estilo.text}>
-                {data.compoundHumidity} 
+                    {data.compoundHumidity} 
                 </Text>
             </View>    
         </View>
