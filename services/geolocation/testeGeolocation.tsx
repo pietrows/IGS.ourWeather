@@ -1,4 +1,5 @@
 import React from "react";
+import { getWeather } from "./services/WeatherService";
 
 const currentGeolocation = () => {
   navigator.geolocation.getCurrentPosition((posicao) => {
