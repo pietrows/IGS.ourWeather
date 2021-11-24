@@ -21,7 +21,24 @@ export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   // state / requisição
-  const [weatherData, setWeather] = useState<IWeather>();
+
+  const weatherInitialData : IWeather = {
+    climate: "Carregando...",
+    currentDay: "Carregando...",
+    currentTime: "Carregando...",
+    daysDegrees: [],
+    nextHoursClimate: {
+      climates: [],
+      compoundHumidity: "Carregando...",
+      humidity: 0
+    },
+    weatherDegress: {
+      compoundValue: "Carregando...",
+      value: 0
+    }
+  }
+
+  const [weatherData, setWeather] = useState<IWeather>(weatherInitialData);
   getWeather().then((x) => setWeather(x));
 
   if (!isLoadingComplete) {
@@ -45,7 +62,9 @@ export default function App() {
         </TouchableOpacity>
         <CurrentTemperature
           currentTemperature={weatherData?.weatherDegress.compoundValue}/>
-          <NextHours />
+          <NextHours 
+            currentTime={weatherData.currentTime}
+            climates={weatherData.nextHoursClimate}/>
       </SafeAreaProvider>
     );
   }

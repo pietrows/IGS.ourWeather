@@ -1,31 +1,21 @@
-import { declareClass } from "@babel/types";
 import * as React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
+import { INextHoursClimate } from "../services/interfaces/WeatherService";
 
-// const showclimates = (data)=>{for(var i = 0; i < 2; i++){
-//     return data.climates[i].hour
-// }}
-export function NextHours() {
-  const data = {
-    climates: [
-      {
-        hour: "18:00",
-        value: "Ensolarado",
-      },
-      {
-        hour: "19:00",
-        value: "Nublado",
-      },
-    ],
-    compoundHumidity: "7%",
-    humidity: 72,
-  };
+interface NextHoursProps {
+    currentTime: string;
+    climates: INextHoursClimate;
+}
+
+export function NextHours(props: NextHoursProps) {
+  const data = props.climates;
+
   return (
     <View style={estilo.container}>
       {data.climates.map((item) => {
         return (
           <View style={estilo.clima}>
-            <View>{getIcons("day", item.value.toLowerCase())}</View>
+            <View>{getIcons(props.currentTime, item.value.toLocaleLowerCase())}</View>
             <Text style={estilo.text}>{item.value}</Text>
             <Text style={estilo.text}>{item.hour}</Text>
           </View>
@@ -35,11 +25,12 @@ export function NextHours() {
       <View style={estilo.clima}>
         <View>
           <Image
-            style={estilo.image}
+            style={estilo.gotaImage}
             source={require("../assets/assetsOurWeather/icones/gota.png")}
           />
         </View>
         <Text style={estilo.gota}>{data.compoundHumidity}</Text>
+        <Text style={estilo.text}>Umidade</Text>
       </View>
     </View>
   );
@@ -70,32 +61,47 @@ const estilo = StyleSheet.create({
   gota: {
     alignSelf: "center",
     position: "absolute",
-    fontSize: 30,
+    paddingTop: 22,
+    fontSize: 20,
   },
   gotaImage: {
-    height: 46,
-    width: 32,
+    alignSelf: "center",
+    height: 62,
+    width: 50,
   },
 });
 
 const getIcons = (day: string, climate: string) => {
-  if (day == "night") {
-    return (
-      <Image
-        style={estilo.image}
-        source={require("../assets/assetsOurWeather/icones/noite/" +
-          climate +
-          ".png")}
-      />
-    );
-  } else {
-    return (
-      <Image
-        style={estilo.image}
-        source={require("../assets/assetsOurWeather/icones/dia/" +
-          climate +
-          ".png")}
-      />
-    );
-  }
+    let imgNight;
+    let imgDay;
+
+    try {
+        imgNight = require("../assets/assetsOurWeather/icones/noite/" + climate + ".png");
+    }
+    catch {
+        imgNight = require("../assets/assetsOurWeather/icones/noite/limpar.png");
+    }
+
+    try {
+        imgDay = require("../assets/assetsOurWeather/icones/dia/" + climate + ".png");
+    }
+    catch {
+        imgDay = require("../assets/assetsOurWeather/icones/dia/ensolarado.png");
+    }
+
+    if (day == "night") {
+        return (
+        <Image
+            style={estilo.image}
+            source={imgNight}
+        />
+        );
+    } else {
+        return (
+        <Image
+            style={estilo.image}
+            source={imgDay}
+        />
+        );
+    }
 };
