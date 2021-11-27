@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
+import { OHA } from './components/oha';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -16,6 +17,7 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
+        <OHA DayDegreesProps={weatherData?.daysDegrees} />;
         <StatusBar />
       </SafeAreaProvider>
     );
