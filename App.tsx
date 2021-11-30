@@ -5,6 +5,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
+
+import Navigation from './navigation';
+import { OHA } from './components/oha';
+=======
 import { NextHours } from './components/NextHours';
 import { CurrentTemperature } from "./components/CurrentTemperature";
 
@@ -16,6 +20,7 @@ import { IWeather } from "./services/interfaces/WeatherService";
 
 import { EvilIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -46,6 +51,9 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
+        <Navigation colorScheme={colorScheme} />
+        <OHA DayDegreesProps={weatherData?.daysDegrees} />;
+        <StatusBar />
 
       
         <TouchableOpacity style={stylesTest.refreshButton}>
