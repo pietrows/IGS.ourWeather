@@ -1,61 +1,45 @@
+import { BottomTabView } from "@react-navigation/bottom-tabs";
 import React from "react";
-import { StyleSheet } from "react-native";
-import { Text, View } from "./Themed";
+import { StyleSheet, Text, View } from "react-native";
+import { IDayDegrees } from "../services/interfaces/WeatherService";
 
-interface DayDegree {
-  day: string;
-  max: string;
-  min: string;
+
+interface dayDegreesProps {
+  daysDegrees: IDayDegrees[];
 }
 
-interface DayDegreesProps extends Array<DayDegree> {}
-
-export function OHA(props: DayDegreesProps) {
+export const OHA = (props: dayDegreesProps) => {
+  const data = props.daysDegrees
   return (
-    <View style={StylesTeste.ContainerPai}>
-      {props.map((item) => {
-        <View styles={StylesTeste.ContainerPai}>
-          <Text style={StylesTeste.textStyled}>{item.day}</Text>
-          <Text style={StylesTeste.textStyled}>
-            {item.min}/{item.max}
-          </Text>
-        </View>;
-        <View styles={StylesTeste.ContainerFilho}>
-          <Text style={StylesTeste.textStyled}>{item.day}</Text>
-          <Text style={StylesTeste.textStyled}>
-            {item.min}/{item.max}
-          </Text>
-        </View>;
-        <View styles={StylesTeste.ContainerFilho}>
-          <Text style={StylesTeste.textStyled}>{item.day}</Text>
-          <Text style={StylesTeste.textStyled}>
-            {item.min}/{item.max}
-          </Text>
-        </View>;
-      })}
+    <View style={style.container}>
+      {data.map((item) => {
+      return (
+        <View style={style.containerPai}>
+          <Text style={style.containerfilho}>{item.day}</Text>
+          <Text style={style.containerfilho}>{item.minDegress}/{item.maxDegrees}</Text>
+        </View>
+      )})}
     </View>
   );
 }
 
-const StylesTeste = StyleSheet.create({
+const style = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 109,
+    left: 0,
+    right: 0
+  },
   containerPai: {
-    backgroundColor:"d3cccc",
     display: "flex",
+    flexDirection: "row",
     justifyContent: "space-between",
-    fontsize:25,
+    paddingHorizontal: 50,
   },
-  containerFilho: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontsize:25,
-    paddinRight:12,
-    paddinLeft: 12,
-  },
-  textStyled: {
-    fontsize:25,
-    
+  containerfilho: {
+    fontSize:20,
+    color: 'white',
   }
-
 })
 ;
 

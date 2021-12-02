@@ -7,9 +7,9 @@ import { IClimate, IWeather, IDayDegrees } from "./interfaces/WeatherService";
  * getWeather
  * Gets the root data from weather by a global position.
  */
-export const getWeather = async () : Promise<IWeather> => {
+export const getWeather = async (latitude: number, longitude: number) : Promise<IWeather> => {
     const { day, time } = getCurrentTimeDay();
-    const { results, hourlyForecasts, dailyForecasts, defaultUnit } = await requestWeatherService("-23.438802929284265", "-46.59046036454876");
+    const { results, hourlyForecasts, dailyForecasts, defaultUnit } = await requestWeatherService(latitude, longitude);
     const currentConditions: CurrentConditions = results[0];
     const twoNextHoursForecasts = hourlyForecasts.slice(0, 2);
     const nextDayForecast: DailyForecast = dailyForecasts[0];
@@ -94,20 +94,19 @@ const getCurrentTimeDay = () => {
     return { day, time };
 }
 
-const requestWeatherService = async (lat: string, long: string) => {
+const requestWeatherService = async (lat: number, long: number) => {
     const defaultUnit = "°C";
     const defaultunitType = "metric";
     const { results } = await requestCurrentWeather(lat, long, defaultunitType);
     const hourlyForecastResponse = await requestHourlyWeather(lat, long, defaultunitType);
     const dailyForecastResponse = await requestDailyWeather(lat, long, defaultunitType);
-
     const hourlyForecasts = hourlyForecastResponse.forecasts;
     const dailyForecasts = dailyForecastResponse.forecasts;
 
     return { results, hourlyForecasts, dailyForecasts, defaultUnit };
 }
 
-const requestCurrentWeather = async (lat: string, long: string, unitType: string) : Promise<CurrentConditionsResponse> => {
+const requestCurrentWeather = async (lat: number, long: number, unitType: string) : Promise<CurrentConditionsResponse> => {
     const BASE_URL = "https://atlas.microsoft.com/weather/currentConditions/json";
     const API_VERSION = "1.0";
     
@@ -142,7 +141,7 @@ const requestCurrentWeather = async (lat: string, long: string, unitType: string
     });
 }
 
-const requestHourlyWeather = async (lat: string, long: string, unitType: string) : Promise<HourlyForecastResponse> => {
+const requestHourlyWeather = async (lat: number, long: number, unitType: string) : Promise<HourlyForecastResponse> => {
     const BASE_URL = "https://atlas.microsoft.com/weather/forecast/hourly/json";
     const API_VERSION = "1.0";
     
@@ -181,7 +180,7 @@ const requestHourlyWeather = async (lat: string, long: string, unitType: string)
     });
 }
 
-const requestDailyWeather = async (lat: string, long: string, unitType: string) : Promise<DailyForecastResponse> => {
+const requestDailyWeather = async (lat: number, long: number, unitType: string) : Promise<DailyForecastResponse> => {
     const BASE_URL = "https://atlas.microsoft.com/weather/forecast/daily/json";
     const API_VERSION = "1.0";
     

@@ -21,6 +21,8 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     borderColor: "black",
+    position: "absolute",
+    top: 180,
     borderStyle: "solid",
     fontSize: 17,
     alignSelf: "center",

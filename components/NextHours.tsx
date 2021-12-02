@@ -39,18 +39,18 @@ const estilo = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "#1F253F",
     alignItems: "center",
     justifyContent: "center",
     textAlign: "center",
-    fontSize: 25,
+    fontSize: 15,
+    zIndex: 1,
   },
   clima: {
     flexDirection: "column",
     flex: 1,
   },
   text: {
-    fontSize: 25,
+    fontSize: 13,
     color: "white",
   },
   image: {
@@ -61,8 +61,8 @@ const estilo = StyleSheet.create({
   gota: {
     alignSelf: "center",
     position: "absolute",
-    paddingTop: 22,
-    fontSize: 20,
+    paddingTop: 30,
+    fontSize: 17,
   },
   gotaImage: {
     alignSelf: "center",
@@ -71,19 +71,23 @@ const estilo = StyleSheet.create({
   },
 });
 
-const getIcons = (day: string, climate: string) => {
+export const getIcons = (day: string, climate: string) => {
     let imgNight;
     let imgDay;
 
     try {
-        imgNight = require("../assets/assetsOurWeather/icones/noite/" + climate + ".png");
+        // imgNight = require("../assets/assetsOurWeather/icones/noite/" + climate + ".png");
+        imgNight = require("../assets/assetsOurWeather/icones/noite/limpar.png");
+
     }
     catch {
         imgNight = require("../assets/assetsOurWeather/icones/noite/limpar.png");
     }
 
     try {
-        imgDay = require("../assets/assetsOurWeather/icones/dia/" + climate + ".png");
+        // imgDay = require("../assets/assetsOurWeather/icones/dia/" + climate + ".png");
+        imgDay = require("../assets/assetsOurWeather/icones/dia/ensolarado.png");
+
     }
     catch {
         imgDay = require("../assets/assetsOurWeather/icones/dia/ensolarado.png");
